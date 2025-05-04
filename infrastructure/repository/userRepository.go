@@ -27,7 +27,7 @@ func (r userRepository) FindUserByEmail(email string) (*entity.User, error) {
 	return mapper.ToUserDomain(u), nil
 }
 
-func (r userRepository) Signup(email, password string) (string, error) {
+func (r userRepository) Signup(email, password string) error {
 	//TODO implement me
 	panic("implement me")
 }

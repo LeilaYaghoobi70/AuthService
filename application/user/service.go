@@ -5,6 +5,7 @@ import (
 	"authService/domain/entity"
 	"authService/domain/user"
 	"errors"
+	"github.com/go-pg/pg/v10"
 )
 
 type Service interface {
@@ -41,7 +42,7 @@ func (u userService) Login(email, password string) (string, error) {
 		return "", errors.New("password incorrect")
 	}
 
-	token, err := u.auth.GenerateToken(email, password)
+	token, err := u.auth.GenerateToken(email)
 
 	if err != nil {
 		return "", errors.New("something went wrong")
@@ -51,6 +52,23 @@ func (u userService) Login(email, password string) (string, error) {
 }
 
 func (u userService) Signup(email, password string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	user, err := u.repo.FindUserByEmail(email)
+	if err != nil && !errors.Is(err, pg.ErrNoRows) {
+		return "", errors.New("something went wrong")
+	}
+	if user != nil {
+		return "", errors.New("user already exists")
+	}
+
+	token, err := u.auth.GenerateToken(email)
+	if err != nil {
+		return "", errors.New("failed to generate token")
+	}
+
+	err = u.repo.Signup(email, password)
+	if err != nil {
+		return "", errors.New("failed to generate token")
+	}
+
+	return token, nil
 }

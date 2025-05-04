@@ -39,8 +39,17 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 }
 
 func (h *Handler) Signup(c *fiber.Ctx) error {
-	//TODO implement me
-	panic("implement me")
+	var registerRequest dto.RegisterRequest
+
+	if err := c.BodyParser(&registerRequest); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest("invalid request"))
+	}
+
+	token, err := h.service.Signup(registerRequest.Email, registerRequest.Password)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.TokenResponse{Status: fiber.StatusOK, Token: token})
 }
 
 func (h *Handler) FindUserByEmail(c *fiber.Ctx) error {

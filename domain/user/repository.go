@@ -6,5 +6,5 @@ import (
 
 type Repository interface {
 	FindUserByEmail(email string) (*entity.User, error)
-	Signup(email, password string) (string, error)
+	Signup(email, password string) error
 }
