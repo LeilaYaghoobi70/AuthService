@@ -21,7 +21,8 @@ func main() {
 	}
 
 	userRepo := repository.UserRepository(db.DB)
-	userAtuh := auth.AuthService()
-	userService := user.UserService(userRepo, userAtuh)
+	userAuth := auth.AuthService()
+	userService := user.UserService(userRepo, userAuth)
 	handler := user2.RouterHandler(userService)
+	user2.RegisterRoutes(handler)
 }

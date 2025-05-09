@@ -21,3 +21,8 @@ type TokenResponse struct {
 	Status int    `json:"status"`
 	Token  string `json:"token"`
 }
+
+type TokenValidationResponse struct {
+	Status  int  `json:"status"`
+	IsValid bool `isValid:"token"`
+}

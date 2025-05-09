@@ -17,13 +17,7 @@ func GenerateToken(email string) (string, error) {
 }
 
 func ExtractEmailFromToken(tokenString string) (string, error) {
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-
-			return nil, fmt.Errorf("unexpected signing method")
-		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
+	token, err := getToken(tokenString)
 
 	if err != nil || !token.Valid {
 		return "", fmt.Errorf("invalid token: %w", err)
@@ -40,4 +34,35 @@ func ExtractEmailFromToken(tokenString string) (string, error) {
 	}
 
 	return email, nil
+}
+
+func TokenIsValid(tokenString string) (bool, error) {
+
+	token, err := getToken(tokenString)
+
+	if err != nil || !token.Valid {
+		return false, fmt.Errorf("invalid token: %w", err)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return false, fmt.Errorf("invalid claims")
+	}
+	exp, ok := claims["exp"].(int64)
+	if time.Now().After(time.Unix(exp, 0)) {
+		return false, fmt.Errorf("token has expired")
+	}
+
+	return true, nil
+}
+
+func getToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	return token, err
 }

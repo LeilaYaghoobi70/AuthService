@@ -52,7 +52,10 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.TokenResponse{Status: fiber.StatusOK, Token: token})
 }
 
-func (h *Handler) FindUserByEmail(c *fiber.Ctx) error {
-	//TODO implement me
-	panic("implement me")
+func (h *Handler) ValidationToken(c *fiber.Ctx) error {
+	isValid, err := h.service.TokenIsValid(c.GetRespHeader("Authorization"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.TokenValidationResponse{Status: fiber.StatusOK, IsValid: isValid})
 }

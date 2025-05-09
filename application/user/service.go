@@ -2,14 +2,13 @@ package user
 
 import (
 	"authService/application/auth"
-	"authService/domain/entity"
 	"authService/domain/user"
 	"errors"
 	"github.com/go-pg/pg/v10"
 )
 
 type Service interface {
-	FindUserByEmail(email string) (*entity.User, error)
+	TokenIsValid(email string) (bool, error)
 	Login(email, password string) (string, error)
 	Signup(email, password string) (string, error)
 }
@@ -26,9 +25,8 @@ func UserService(repo user.Repository, auth auth.Service) Service {
 	}
 }
 
-func (u userService) FindUserByEmail(email string) (*entity.User, error) {
-	user, err := u.repo.FindUserByEmail(email)
-	return user, err
+func (u userService) TokenIsValid(token string) (bool, error) {
+	return auth.TokenIsValid(token)
 }
 
 func (u userService) Login(email, password string) (string, error) {
