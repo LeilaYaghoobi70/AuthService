@@ -1,12 +1,8 @@
 package dto
 
-type Data struct {
-	Data string
-}
-
 type Response struct {
-	Status int  `json:"status"`
-	Data   Data `json:"data"`
+	Status int         `json:"status"`
+	Data   interface{} `json:"data"`
 }
 type UserResponse struct {
 	Email    string `json:"email"`
