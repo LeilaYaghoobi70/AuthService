@@ -34,8 +34,13 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("service error"))
 	}
+	r, err := ConvertToJson(dto.TokenResponse{Token: token})
 
-	return c.Status(fiber.StatusOK).JSON(dto.TokenResponse{Status: fiber.StatusOK, Token: token})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("internal error"))
+	}
+
+	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: dto.Data{Data: r}})
 }
 
 func (h *Handler) Signup(c *fiber.Ctx) error {
@@ -45,11 +50,11 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest("invalid request"))
 	}
 
-	token, err := h.service.Signup(registerRequest.Email, registerRequest.Password)
+	err := h.service.Signup(registerRequest.Email, registerRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
 	}
-	return c.Status(fiber.StatusOK).JSON(dto.TokenResponse{Status: fiber.StatusOK, Token: token})
+	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: dto.Data{}})
 }
 
 func (h *Handler) ValidationToken(c *fiber.Ctx) error {
@@ -57,5 +62,10 @@ func (h *Handler) ValidationToken(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
 	}
-	return c.Status(fiber.StatusOK).JSON(dto.TokenValidationResponse{Status: fiber.StatusOK, IsValid: isValid})
+	r, err := ConvertToJson(dto.TokenValidationResponse{IsValid: isValid})
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("internal error"))
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: dto.Data{Data: r}})
 }

@@ -10,7 +10,7 @@ import (
 type Service interface {
 	TokenIsValid(email string) (bool, error)
 	Login(email, password string) (string, error)
-	Signup(email, password string) (string, error)
+	Signup(email, password string) error
 }
 
 type userService struct {
@@ -49,24 +49,19 @@ func (u userService) Login(email, password string) (string, error) {
 	return token, nil
 }
 
-func (u userService) Signup(email, password string) (string, error) {
+func (u userService) Signup(email, password string) error {
 	user, err := u.repo.FindUserByEmail(email)
 	if err != nil && !errors.Is(err, pg.ErrNoRows) {
-		return "", errors.New("something went wrong")
+		return errors.New("something went wrong")
 	}
 	if user != nil {
-		return "", errors.New("user already exists")
-	}
-
-	token, err := u.auth.GenerateToken(email)
-	if err != nil {
-		return "", errors.New("failed to generate token")
+		return errors.New("user already exists")
 	}
 
 	err = u.repo.Signup(email, password)
 	if err != nil {
-		return "", errors.New("failed to generate token")
+		return errors.New("failed to generate token")
 	}
 
-	return token, nil
+	return nil
 }

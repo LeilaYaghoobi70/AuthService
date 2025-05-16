@@ -5,8 +5,8 @@ import (
 	"authService/interface/user/dto"
 )
 
-func ToUserDTO(u *entity.User) dto.User {
-	return dto.User{
+func ToUserDTO(u *entity.User) dto.UserResponse {
+	return dto.UserResponse{
 		Password: u.Password,
 		Email:    u.Email,
 		Role:     u.Role,

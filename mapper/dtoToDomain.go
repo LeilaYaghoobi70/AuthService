@@ -5,7 +5,7 @@ import (
 	"authService/interface/user/dto"
 )
 
-func ToDomainUser(dto dto.User) *entity.User {
+func ToDomainUser(dto dto.UserResponse) *entity.User {
 	return &entity.User{
 		Password: dto.Password,
 		Email:    dto.Email,
