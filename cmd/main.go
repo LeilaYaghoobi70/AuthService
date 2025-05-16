@@ -8,10 +8,17 @@ import (
 	user2 "authService/interface/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found or could not be loaded")
+		return
+	}
 	db.Connect()
 	defer db.Close()
 	if err := db.CreateSchema(db.DB); err != nil {
@@ -25,5 +32,5 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 	user2.RegisterRoutes(app, handler)
-	app.Listen(":3000")
+	app.Listen("127.0.0.1:" + os.Getenv("GOLANG_PORT"))
 }
