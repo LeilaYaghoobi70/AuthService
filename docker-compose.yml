@@ -1,14 +1,16 @@
-version: "3.8"
+
 
 services:
   postgres:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_database_name
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: auth_service
     ports:
       - "5432:5432"
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

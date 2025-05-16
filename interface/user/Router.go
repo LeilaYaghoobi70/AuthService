@@ -2,8 +2,7 @@ package user
 
 import "github.com/gofiber/fiber/v2"
 
-func RegisterRoutes(h Handler) {
-	app := fiber.New()
+func RegisterRoutes(app *fiber.App, h Handler) {
 	registerVersionOnesApi(h, app)
 }
 

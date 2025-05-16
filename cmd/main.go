@@ -6,16 +6,14 @@ import (
 	"authService/infrastructure/db"
 	"authService/infrastructure/repository"
 	user2 "authService/interface/user"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
 )
 
 func main() {
 	db.Connect()
-
-	if err := db.Close(); err != nil {
-		log.Fatalf("error closing db: %v", err)
-	}
-
+	defer db.Close()
 	if err := db.CreateSchema(db.DB); err != nil {
 		log.Fatalf("error closing db: %v", err)
 	}
@@ -24,5 +22,8 @@ func main() {
 	userAuth := auth.AuthService()
 	userService := user.UserService(userRepo, userAuth)
 	handler := user2.RouterHandler(userService)
-	user2.RegisterRoutes(handler)
+	app := fiber.New()
+	app.Use(logger.New())
+	user2.RegisterRoutes(app, handler)
+	app.Listen(":3000")
 }

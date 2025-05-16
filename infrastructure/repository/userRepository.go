@@ -6,6 +6,7 @@ import (
 	"authService/infrastructure/db"
 	"authService/mapper"
 	"github.com/go-pg/pg/v10"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 type userRepository struct {
@@ -28,6 +29,12 @@ func (r userRepository) FindUserByEmail(email string) (*entity.User, error) {
 }
 
 func (r userRepository) Signup(email, password string) error {
-	//TODO implement me
-	panic("implement me")
+	u := &db.User{
+		Email:    email,
+		Password: password,
+	}
+	resut, err := r.db.Model(u).Insert()
+	log.Infof("resut : %v", resut.Model())
+	return err
+
 }
