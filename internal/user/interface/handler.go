@@ -1,21 +1,23 @@
-package user
+package _interface
 
 import (
-	"authService/application/user"
-	"authService/interface/user/dto"
+	"authService/internal/user/application"
+	"authService/internal/user/interface/dto"
 	"authService/pkg/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Handler struct {
-	service user.Service
+	userService application.Service
 }
 
 var validate = validator.New()
 
-func RouterHandler(s user.Service) Handler {
-	return Handler{service: s}
+func RouterHandler(s application.Service) Handler {
+	return Handler{
+		userService: s,
+	}
 }
 
 func (h *Handler) Login(c *fiber.Ctx) error {
@@ -29,7 +31,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
 	}
 
-	token, err := h.service.Login(login.Email, login.Password)
+	token, err := h.userService.Login(login.Email, login.Password)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("service error"))
@@ -45,17 +47,9 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest("invalid request"))
 	}
 
-	err := h.service.Signup(registerRequest.Email, registerRequest.Password)
+	err := h.userService.Signup(registerRequest.Email, registerRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
 	}
 	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: ""})
-}
-
-func (h *Handler) ValidationToken(c *fiber.Ctx) error {
-	isValid, err := h.service.TokenIsValid(c.GetRespHeader("Authorization"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
-	}
-	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: dto.TokenValidationResponse{IsValid: isValid}})
 }

@@ -1,4 +1,4 @@
-package auth
+package application
 
 import (
 	"fmt"
@@ -14,26 +14,6 @@ func GenerateToken(email string) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
-}
-
-func ExtractEmailFromToken(tokenString string) (string, error) {
-	token, err := getToken(tokenString)
-
-	if err != nil || !token.Valid {
-		return "", fmt.Errorf("invalid token: %w", err)
-	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return "", fmt.Errorf("invalid claims")
-	}
-
-	email, ok := claims["email"].(string)
-	if !ok {
-		return "", fmt.Errorf("username not found in token")
-	}
-
-	return email, nil
 }
 
 func TokenIsValid(tokenString string) (bool, error) {

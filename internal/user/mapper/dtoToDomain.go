@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"authService/domain/entity"
-	"authService/interface/user/dto"
+	"authService/internal/user/domain/entity"
+	"authService/internal/user/interface/dto"
 )
 
 func ToDomainUser(dto dto.UserResponse) *entity.User {

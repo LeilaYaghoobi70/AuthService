@@ -7,17 +7,16 @@ COPY go.* ./
 RUN go mod download
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /docker-gs-ping ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /auth-service ./cmd/main.go
 
 
 # --- Final stage ---
 FROM ubuntu:latest
 
-LABEL authors="leilayaghoobi"
-
-COPY --from=builder /docker-gs-ping /docker-gs-ping
+COPY --from=builder /auth-service auth-service
+COPY --from=builder .env ./app/.env
 
 EXPOSE 3000
 
-CMD ["/docker-gs-ping"]
+CMD ["/auth-service"]
 

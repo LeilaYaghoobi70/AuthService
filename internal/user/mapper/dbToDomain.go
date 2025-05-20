@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"authService/domain/entity"
-	"authService/infrastructure/db"
+	"authService/internal/user/domain/entity"
+	"authService/internal/user/infrastructure/db"
 )
 
 func ToUserDomain(u *db.User) *entity.User {

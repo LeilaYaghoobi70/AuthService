@@ -11,9 +11,8 @@ var DB *pg.DB
 
 func Connect() {
 	opts := pg.Options{
-		Addr:     ":" + os.Getenv("DB_PORT"),
+		Addr:     os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
 		Password: os.Getenv("DB_PASSWORD"),
-		User:     os.Getenv("DB_USER"),
 		Database: os.Getenv("DB_NAME"),
 	}
 

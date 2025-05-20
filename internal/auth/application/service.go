@@ -1,13 +1,8 @@
-package auth
-
-import (
-	"authService/domain/entity"
-)
+package application
 
 type Service interface {
+	IsValidateToken(email string) (bool, error)
 	GenerateToken(email string) (string, error)
-	GetUserByToken(token string) (entity.User, error)
-	IsValidateToken(token string) (bool, error)
 }
 
 type service struct {
@@ -22,9 +17,4 @@ func (s service) GenerateToken(email string) (string, error) {
 }
 func (s service) IsValidateToken(token string) (bool, error) {
 	return TokenIsValid(token)
-}
-
-func (s service) GetUserByToken(token string) (entity.User, error) {
-	//TODO implement me
-	panic("implement me")
 }

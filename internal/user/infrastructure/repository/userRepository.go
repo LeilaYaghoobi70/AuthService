@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"authService/domain/entity"
-	"authService/domain/user"
-	"authService/infrastructure/db"
-	"authService/mapper"
+	"authService/internal/user/domain"
+	"authService/internal/user/domain/entity"
+	"authService/internal/user/infrastructure/db"
+	"authService/internal/user/mapper"
 	"github.com/go-pg/pg/v10"
 	"github.com/gofiber/fiber/v2/log"
 )
@@ -13,7 +13,7 @@ type userRepository struct {
 	db *pg.DB
 }
 
-func UserRepository(db *pg.DB) user.Repository {
+func UserRepository(db *pg.DB) domain.Repository {
 	return userRepository{db: db}
 }
 

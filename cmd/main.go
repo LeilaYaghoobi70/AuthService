@@ -1,11 +1,12 @@
 package main
 
 import (
-	"authService/application/auth"
-	"authService/application/user"
-	"authService/infrastructure/db"
-	"authService/infrastructure/repository"
-	user2 "authService/interface/user"
+	authApplication "authService/internal/auth/application"
+	authInterface "authService/internal/auth/interface"
+	"authService/internal/user/application"
+	"authService/internal/user/infrastructure/db"
+	"authService/internal/user/infrastructure/repository"
+	userInterface "authService/internal/user/interface"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
@@ -13,12 +14,15 @@ import (
 	"os"
 )
 
-func main() {
+func init() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: .env file not found or could not be loaded")
 		return
 	}
+}
+
+func main() {
 	db.Connect()
 	defer db.Close()
 	if err := db.CreateSchema(db.DB); err != nil {
@@ -26,11 +30,18 @@ func main() {
 	}
 
 	userRepo := repository.UserRepository(db.DB)
-	userAuth := auth.AuthService()
-	userService := user.UserService(userRepo, userAuth)
-	handler := user2.RouterHandler(userService)
+
+	authService := authApplication.AuthService()
+	userService := application.UserService(userRepo, authService)
+
+	userHandler := userInterface.RouterHandler(userService)
+	authHandler := authInterface.RouterHandler(authService)
+
 	app := fiber.New()
 	app.Use(logger.New())
-	user2.RegisterRoutes(app, handler)
+
+	userInterface.RegisterRoutes(app, userHandler)
+	authInterface.RegisterRoutes(app, authHandler)
+
 	app.Listen("127.0.0.1:" + os.Getenv("GOLANG_PORT"))
 }

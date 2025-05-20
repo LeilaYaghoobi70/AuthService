@@ -1,7 +1,7 @@
-package user
+package domain
 
 import (
-	"authService/domain/entity"
+	"authService/internal/user/domain/entity"
 )
 
 type Repository interface {

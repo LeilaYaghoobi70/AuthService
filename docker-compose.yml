@@ -4,13 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${GOLANG_PORT}:3000"
+      - "${GOLANG_PORT}:${GOLANG_PORT}"
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_completed_successfully
-    env_file:
-      - .env
+      - postgres
 
   postgres:
     image: postgres:latest

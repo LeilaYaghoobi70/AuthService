@@ -1,8 +1,8 @@
-package user
+package application
 
 import (
-	"authService/application/auth"
-	"authService/domain/user"
+	authApplication "authService/internal/auth/application"
+	"authService/internal/user/domain"
 	"errors"
 	"github.com/go-pg/pg/v10"
 )
@@ -14,11 +14,11 @@ type Service interface {
 }
 
 type userService struct {
-	repo user.Repository
-	auth auth.Service
+	repo domain.Repository
+	auth authApplication.Service
 }
 
-func UserService(repo user.Repository, auth auth.Service) Service {
+func UserService(repo domain.Repository, auth authApplication.Service) Service {
 	return &userService{
 		repo: repo,
 		auth: auth,
@@ -26,7 +26,7 @@ func UserService(repo user.Repository, auth auth.Service) Service {
 }
 
 func (u userService) TokenIsValid(token string) (bool, error) {
-	return auth.TokenIsValid(token)
+	return authApplication.TokenIsValid(token)
 }
 
 func (u userService) Login(email, password string) (string, error) {
