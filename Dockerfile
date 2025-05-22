@@ -14,7 +14,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /auth-service ./cmd/main.g
 FROM ubuntu:latest
 
 COPY --from=builder /auth-service auth-service
-COPY --from=builder .env ./app/.env
+COPY .env .env
 
 EXPOSE 3000
 
