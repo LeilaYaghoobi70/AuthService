@@ -1,19 +1,19 @@
 package db
 
 import (
+	"authService/internal/config"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"log"
-	"os"
 )
 
 var DB *pg.DB
 
 func Connect() {
 	opts := pg.Options{
-		Addr:     os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_NAME"),
+		Addr:     config.DbHost + ":" + config.DbPort,
+		Password: config.DbPassword,
+		Database: config.DbName,
 	}
 
 	DB = pg.Connect(&opts)

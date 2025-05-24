@@ -1,8 +1,8 @@
-package _interface
+package handler
 
 import (
 	"authService/internal/auth/application"
-	"authService/internal/user/interface/dto"
+	"authService/internal/user/handler/dto"
 
 	"authService/pkg/errors"
 	"github.com/gofiber/fiber/v2"

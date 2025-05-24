@@ -1,21 +1,15 @@
 package main
 
 import (
-	authApplication "authService/internal/auth/application"
-	authInterface "authService/internal/auth/interface"
-	"authService/internal/user/application"
-	"authService/internal/user/infrastructure/db"
-	"authService/internal/user/infrastructure/repository"
-	userInterface "authService/internal/user/interface"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/joho/godotenv"
+	authHandler "authService/internal/auth/handler"
+	"authService/internal/config"
+	"authService/internal/di"
+	userHandler "authService/internal/user/handler"
 	"log"
-	"os"
 )
 
 func init() {
-	err := godotenv.Load()
+	err := config.LoadEvn()
 	if err != nil {
 		log.Println("Warning: .env file not found or could not be loaded")
 		return
@@ -23,25 +17,17 @@ func init() {
 }
 
 func main() {
-	db.Connect()
-	defer db.Close()
-	if err := db.CreateSchema(db.DB); err != nil {
-		log.Fatalf("error closing db: %v", err)
+	container, err := di.NewContainer()
+
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
 
-	userRepo := repository.UserRepository(db.DB)
+	api := container.App.Group("/api/v1")
 
-	authService := authApplication.AuthService()
-	userService := application.UserService(userRepo, authService)
+	userHandler.RegisterRoutes(api, container.UserHandler)
+	authHandler.RegisterRoutes(api, container.AuthHandler)
 
-	userHandler := userInterface.RouterHandler(userService)
-	authHandler := authInterface.RouterHandler(authService)
-
-	app := fiber.New()
-	app.Use(logger.New())
-
-	userInterface.RegisterRoutes(app, userHandler)
-	authInterface.RegisterRoutes(app, authHandler)
-
-	app.Listen("127.0.0.1:" + os.Getenv("GOLANG_PORT"))
+	container.App.Listen(":" + config.GolangPort)
 }

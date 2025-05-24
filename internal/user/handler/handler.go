@@ -1,8 +1,8 @@
-package _interface
+package handler
 
 import (
 	"authService/internal/user/application"
-	"authService/internal/user/interface/dto"
+	"authService/internal/user/handler/dto"
 	"authService/pkg/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +34,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	token, err := h.userService.Login(login.Email, login.Password)
 
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("service error"))
+		return c.Status(fiber.StatusInternalServerError).JSON(errors.InternalError("application error"))
 	}
 
 	return c.Status(fiber.StatusOK).JSON(dto.Response{Status: fiber.StatusOK, Data: dto.TokenResponse{Token: token}})
