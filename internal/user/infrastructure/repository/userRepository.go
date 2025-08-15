@@ -14,12 +14,11 @@ import (
 )
 
 type userRepository struct {
-	db  *pg.DB
-	ctx context.Context
+	db *pg.DB
 }
 
-func UserRepository(db *pg.DB, ctx context.Context) domain.Repository {
-	return userRepository{db: db, ctx: ctx}
+func UserRepository(db *pg.DB) domain.Repository {
+	return userRepository{db: db}
 }
 
 func (r userRepository) FindUserByEmail(email string) (*entity.User, error) {
@@ -33,13 +32,13 @@ func (r userRepository) FindUserByEmail(email string) (*entity.User, error) {
 	return mapper.ToUserDomain(u), nil
 }
 
-func (r userRepository) Authenticate(username, email, password string) (bool, error) {
+func (r userRepository) Authenticate(username, email, password string, ctx context.Context) (bool, error) {
 	const q = `SELECT password_hash FROM users WHERE username = $1 AND email = $1 LIMIT 1`
 	u := &db.User{
 		Username: username, Email: email,
 	}
 	var hash string
-	_, err := r.db.QueryOneContext(r.ctx, q, u)
+	_, err := r.db.QueryOneContext(ctx, q, u)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}

@@ -3,13 +3,14 @@ package application
 import (
 	authApplication "authService/internal/auth/application"
 	"authService/internal/user/domain"
+	"context"
 	"errors"
 )
 
 type Service interface {
 	TokenIsValid(email string) (bool, error)
 	Login(email, password string) (string, error)
-	Signup(username, email, password string) error
+	Signup(username, email, password string, ctx context.Context) error
 }
 
 type userService struct {
@@ -48,8 +49,9 @@ func (u userService) Login(email, password string) (string, error) {
 	return token, nil
 }
 
-func (u userService) Signup(username, email, password string) error {
-	_, err := u.repo.Authenticate(username, email, password)
+func (u userService) Signup(username, email, password string, ctx context.Context) error {
+	defer ctx.Done()
+	_, err := u.repo.Authenticate(username, email, password, ctx)
 	if err != nil {
 		return err
 	}

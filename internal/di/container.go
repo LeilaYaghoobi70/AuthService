@@ -8,7 +8,6 @@ import (
 	userHanlder "authService/internal/user/handler"
 	"authService/internal/user/infrastructure/db"
 	"authService/internal/user/infrastructure/repository"
-	"context"
 	"github.com/go-pg/pg/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -28,9 +27,6 @@ type container struct {
 type Container *container
 
 func NewContainer() (Container, error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	db.Connect()
 	defer db.Close()
 	if err := db.CreateSchema(db.DB); err != nil {
@@ -38,7 +34,7 @@ func NewContainer() (Container, error) {
 		return nil, err
 	}
 
-	userRepo := repository.UserRepository(db.DB, ctx)
+	userRepo := repository.UserRepository(db.DB)
 
 	authService := authApplication.AuthService()
 	userService := application.UserService(userRepo, authService)
