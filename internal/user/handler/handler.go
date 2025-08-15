@@ -47,7 +47,7 @@ func (h *Handler) Signup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest("invalid request"))
 	}
 
-	err := h.userService.Signup(registerRequest.Email, registerRequest.Password)
+	err := h.userService.Signup(registerRequest.Username, registerRequest.Email, registerRequest.Password)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errors.BadRequest(err.Error()))
 	}

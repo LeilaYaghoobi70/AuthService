@@ -8,5 +8,5 @@ func RegisterRoutes(api fiber.Router, h Handler) {
 
 func registerVersionOnesApi(h Handler, api fiber.Router) {
 	api.Post("/login", h.Login)
-	api.Post("/signup", h.Signup)
+	api.Post("/sign", h.Signup)
 }

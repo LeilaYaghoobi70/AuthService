@@ -4,13 +4,12 @@ import (
 	authApplication "authService/internal/auth/application"
 	"authService/internal/user/domain"
 	"errors"
-	"github.com/go-pg/pg/v10"
 )
 
 type Service interface {
 	TokenIsValid(email string) (bool, error)
 	Login(email, password string) (string, error)
-	Signup(email, password string) error
+	Signup(username, email, password string) error
 }
 
 type userService struct {
@@ -49,16 +48,12 @@ func (u userService) Login(email, password string) (string, error) {
 	return token, nil
 }
 
-func (u userService) Signup(email, password string) error {
-	user, err := u.repo.FindUserByEmail(email)
-	if err != nil && !errors.Is(err, pg.ErrNoRows) {
-		return errors.New("something went wrong")
+func (u userService) Signup(username, email, password string) error {
+	_, err := u.repo.Authenticate(username, email, password)
+	if err != nil {
+		return err
 	}
-	if user != nil {
-		return errors.New("user already exists")
-	}
-
-	err = u.repo.Signup(email, password)
+	err = u.repo.Signup(username, email, password)
 	if err != nil {
 		return errors.New("failed to generate token")
 	}
